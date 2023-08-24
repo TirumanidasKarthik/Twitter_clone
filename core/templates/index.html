@@ -1,0 +1,39 @@
+
+
+
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-8">
+        {% if tweets %}
+                        {% for tweet in tweets %}
+                            <div class="card">
+                                <div class="card-header">
+                                {{tweet.user.username}}
+                                </div>
+                                <div class="card-body">
+                                <blockquote class="blockquote mb-0">
+                                    <p>{{tweet.body}}</p>
+                                    <footer class="blockquote-footer">Posted at:{{tweet.created_at}}</footer>
+                                </blockquote>
+                                </div>
+                            </div>
+                        </br>
+                        {% endfor %}
+        {% endif %}
+        </div>
+        {% if tweet_form %}
+        <div class="col-4">
+            <form method="POST">
+                {% csrf_token%}
+                {{ tweet_form.as_p }}
+                <button type="submit" class="btn btn-primary">Tweet</button>
+              </form>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock%}

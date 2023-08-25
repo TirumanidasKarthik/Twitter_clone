@@ -1,10 +1,11 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth import login, logout, authenticate
+from django.contrib.auth.models import User
 
 
 from .models import Profile, Tweet
-from .forms import TweetForm, SignupForm
+from .forms import TweetForm, SignupForm, UpdateUserForm, UserPasswordChangeForm
 
 # Create your views here.
 
@@ -93,3 +94,36 @@ def sign_up(request):
 
     
     return render(request, 'sign_up.html', {'signup_form': signup_form})
+
+
+def update_user(request):
+    if request.user.is_authenticated:
+        current_user = User.objects.get(id=request.user.id)
+        update_user_form = UpdateUserForm(request.POST or None, instance=current_user)
+        if update_user_form.is_valid():
+            update_user_form.save()
+            messages.success(request, ('Updated successfully!'))
+        return render(request, 'update_user.html', {'update_user_form': update_user_form})
+    else:
+        messages.warning(request, ('You must be logged in...'))
+        return redirect('core:login')
+
+def update_password(request):
+    if request.user.is_authenticated:
+        current_user = User.objects.get(id=request.user.id)
+        password_form = UserPasswordChangeForm(user=current_user)
+        if request.method == 'POST':
+            password_form = UserPasswordChangeForm(current_user, request.POST)
+            if password_form.is_valid():
+                password_form.save()
+                messages.success(request, ('Password changed successfully!'))
+                messages.success(request, ('Login with new password'))
+                return redirect('core:login')
+            else:
+                #messages.warning(request, ('Something went wrong. Try again!'))
+                return render(request, 'password_change.html', {'password_form': password_form})
+            
+        return render(request, 'password_change.html', {'password_form': password_form})
+    else:
+        messages.warning(request, ('You must be logged in...'))
+        return redirect('core:login')

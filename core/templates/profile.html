@@ -58,7 +58,9 @@
                     <button type="submit" class="btn btn-primary" name="follow" value="follow">follow</button>
                     {% endif %}
                 </form>
-            {% endif %}
+            {% else %}
+                <a href="{% url 'core:update_user' %}" class="btn btn-primary">Update Profile</a>
+            {% endif%}
         </div>
 
     </div>
